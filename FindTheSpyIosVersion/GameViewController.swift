@@ -21,7 +21,6 @@ class GameViewController: UIViewController {
     let timeRemaining = [300,360,360,420,420,480,540,600]
     let players = [4,5,6,7,7,8,9,10]
     let spyCount = [1,1,1,1,2,2,2,2]
-    let normalPlayerCounter = [3,4,5,6,5,6,7,8]
     var timer = Timer()
     var seconds = 60
     //36 локации
@@ -55,7 +54,7 @@ class GameViewController: UIViewController {
     var counter = 1
     
    
-    let diceRoll = Int(arc4random_uniform(34))
+    let diceRoll = (Int(arc4random_uniform(UInt32(1e2))) % 34)
     
     @IBOutlet weak var textChan: UIButton!
     
@@ -71,8 +70,15 @@ class GameViewController: UIViewController {
         }
         else{
         if counter == 1 {
-             firstSpy = Int(arc4random_uniform(UInt32(players[numberofPlayers]))+1)
-             secondSpy = Int(arc4random_uniform(UInt32(players[numberofPlayers]))+1)
+                firstSpy = (Int(arc4random_uniform(UInt32(1e9 + 7))) % players[numberofPlayers]) + 1
+                firstSpy = (Int(arc4random_uniform(UInt32(1e9 + 7))) % players[numberofPlayers]) + 1
+                firstSpy = (Int(arc4random_uniform(UInt32(1e9 + 7))) % players[numberofPlayers]) + 1
+            if (numberofPlayers >= 4)
+            {
+                secondSpy = (Int(arc4random_uniform(UInt32(1e9 + 7))) % players[numberofPlayers]) + 1
+                secondSpy = (Int(arc4random_uniform(UInt32(1e9 + 7))) % players[numberofPlayers]) + 1
+                secondSpy = (Int(arc4random_uniform(UInt32(1e9 + 7))) % players[numberofPlayers]) + 1
+            }
             if secondSpy == firstSpy
             {
                secondSpy += firstSpy
@@ -81,7 +87,7 @@ class GameViewController: UIViewController {
             }
             if secondSpy == firstSpy
             {
-                secondSpy += (firstSpy * Int(arc4random_uniform(UInt32(players[numberofPlayers]))+1))
+                secondSpy += (firstSpy * Int(arc4random_uniform(UInt32(1e9 + 7))))
                 secondSpy %= players[numberofPlayers]
                 secondSpy += 1
             }
@@ -90,22 +96,28 @@ class GameViewController: UIViewController {
             
        // }
         if numberofPlayers < 4 {
-            nowPlayer.text = String(counter/2+1);
-            if counter % 2 == 0 {
+            nowPlayer.text = String(counter);
+            
+            if flag == 0
+            {
                 textChan.setTitle("нажмите, чтобы узнать локацию", for: .normal)
+                flag = 1
+            }
+                
+            else if counter == firstSpy{
+                textChan.setTitle("ШПИОН", for: .normal)
+                flag = 0
                 counter = counter + 1
             }
-            else {
-                if counter == firstSpy || counter - 1 == firstSpy {
-                    
-                     textChan.setTitle("ШПИОН " , for: .normal)
-                 
-                    counter = counter + 1
-                }
-                else {
+                
+            else{
                 textChan.setTitle(poolLocation[diceRoll], for: .normal)
+                flag = 0
                 counter = counter + 1
-                }
+            }
+            if counter == players[numberofPlayers] + 1 && flag == 0
+            {
+                counter *= 2
             }
         }
         else {
